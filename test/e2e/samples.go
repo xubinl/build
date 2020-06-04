@@ -81,6 +81,9 @@ func createBuild(namespace string, identifier string, filePath string) {
 	amendBuild(identifier, b)
 
 	f := framework.Global
+	//Try to delete the build with the same name if existed.
+	//So that we can use flakeAttempts flag to auto rerun the case when failed.
+	f.Client.Delete(goctx.TODO(), b)
 	err = f.Client.Create(goctx.TODO(), b, cleanupOptions(ctx))
 	Expect(err).ToNot(HaveOccurred(), "Unable to create build %s", identifier)
 

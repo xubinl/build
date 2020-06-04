@@ -160,6 +160,10 @@ func validateBuildRunToSucceed(
 	trueCondition := v1.ConditionTrue
 	pendingAndRunningStatues := []string{pendingStatus, runningStatus}
 
+	//Try to delete the buildrun with the same name if existed.
+	//So that we can use flakeAttempts flag to auto rerun the case when failed.
+	f.Client.Delete(goctx.TODO(), testBuildRun)
+
 	// Ensure the BuildRun has been created
 	err := f.Client.Create(goctx.TODO(), testBuildRun, cleanupOptions(ctx))
 	Expect(err).ToNot(HaveOccurred(), "Failed to create build run.")
@@ -234,6 +238,10 @@ func validateBuildRunToFail(
 ) {
 	f := framework.Global
 	falseCondition := v1.ConditionFalse
+
+	//Try to delete the buildrun with the same name if existed.
+	//So that we can use flakeAttempts flag to auto rerun the case when failed.
+	f.Client.Delete(goctx.TODO(), testBuildRun)
 
 	// Create the BuildRun
 	err := f.Client.Create(goctx.TODO(), testBuildRun, cleanupOptions(ctx))
